@@ -1,6 +1,11 @@
 {
   "name": "desafio-conceitos-nodejs",
   "version": "1.0.0",
+  "author": {
+    "name": "Lucas Gomes",
+    "email": "lucas.sbgomes@gmail.com",
+    "url": "https://gomes.eti.br/"
+  },
   "main": "src/server.js",
   "license": "MIT",
   "scripts": {

@@ -8,7 +8,6 @@ app.use(express.json());
 app.use(cors());
 
 const repositories = [];
-const likes = [];
 
 function validateRepositoryId(req, res, next) {
   const { id } = req.params;
@@ -23,17 +22,7 @@ function validateRepositoryId(req, res, next) {
 app.use('/repositories/:id', validateRepositoryId);
 
 app.get("/repositories", (req, res) => {
-  const resultRepositories = repositories.map(r => {
-    const amountLikes = likes.map(l => l.repository_id === r.id)
-    return {
-      id: r.id,
-      title: r.title,
-      url: r.url,
-      techs: r.techs,
-      likes: amountLikes.length
-    }
-  })
-  return res.json(resultRepositories);
+  return res.json(repositories);
 });
 
 app.post("/repositories", (req, res) => {
@@ -43,7 +32,8 @@ app.post("/repositories", (req, res) => {
     id: uuid(),
     title,
     url,
-    techs
+    techs,
+    likes: 0
   };
 
   repositories.push(repository);
@@ -66,7 +56,8 @@ app.put("/repositories/:id", (req, res) => {
     id,
     title,
     url,
-    techs
+    techs,
+    likes: repositories[repIndex].likes
   };
 
   repositories[repIndex] = repository;
@@ -91,15 +82,15 @@ app.delete("/repositories/:id", (req, res) => {
 app.post("/repositories/:id/like", (req, res) => {
   const { id } = req.params;
 
-  likes.push({repository_id: id});
+  const repIndex = repositories.findIndex(r => r.id === id);
 
-  const resultLikes = likes.map(l => l.repository_id === id);
-
-  if (!resultLikes.length) {
+  if (repIndex < 0) {
     return res.status(400).json({ error: 'Repository not found.'} );
   }
 
-  return res.json({ message: `Amount of liked the repository is: ${resultLikes.length}`});
+  repositories[repIndex].likes++;
+
+  return res.json(repositories[repIndex]);
 });
 
 module.exports = app;
